@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Static Site to Pages
 
 on:
 push:
@@ -15,34 +15,29 @@ group: pages
 cancel-in-progress: true
 
 jobs:
-build:
-runs-on: ubuntu-latest
+deploy:
+environment:
+name: github-pages
+url: ${{ steps.deployment.outputs.page_url }}
 
 ```
+runs-on: ubuntu-latest
+
 steps:
-  - name: Checkout repository
+  - name: Checkout
     uses: actions/checkout@v4
 
-  - name: Configure Pages
+  - name: Setup Pages
     uses: actions/configure-pages@v5
 
-  - name: Upload site artifact
+  - name: Upload Site
     uses: actions/upload-pages-artifact@v3
     with:
       path: .
-```
 
-deploy:
-needs: build
-runs-on: ubuntu-latest
-
-```
-environment:
-  name: github-pages
-  url: ${{ steps.deployment.outputs.page_url }}
-
-steps:
-  - name: Deploy to GitHub Pages
+  - name: Deploy
     id: deployment
     uses: actions/deploy-pages@v4
+```
+
 ```

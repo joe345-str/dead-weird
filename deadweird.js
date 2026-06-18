@@ -588,6 +588,82 @@ function gameOver(){
     document.getElementById('tc').style.display='none';
     showScr('go');
   },700);
+????????
+export function createZombie(sheet, x, y) {
+    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
+    zombie.anchorset(0.5);
+    zombie.x = x;
+    zombie.y = y;
+    zombie.animationSpeed = 0.15;
+    zombie.play();
+    zombie.speed = 0.6;
+    return zombie;
+}
+import { createZombie } from './zombie.js';
+
+export class Spawner {
+    constructor(app, sheet) {
+        this.app = app;
+        this.sheet = sheet;
+        this.zombies = [];
+        this.spawnRate = 1500;
+        this.lastSpawn = 0;
+    }
+
+    update(delta, player) {
+        this.lastSpawn += delta;
+
+        if (this.lastSpawn > this.spawnRate) {
+            this.spawnZombie();
+            this.lastSpawn = 0;
+        }
+
+        this.updateZombies(player);
+    }
+
+    spawnZombie() {
+        const x = Math.random() * this.app.screen.width;
+        const y = Math.random() * this.app.screen.height;
+
+        const zombie = createZombie(this.sheet, x, y);
+        this.app.stage.addChild(zombie);
+        this.zombies.push(zombie);
+    }
+
+    updateZombies(player) {
+        for (const z of this.zombies) {
+            const dx = player.x - z.x;
+            const dy = player.y - z.y;
+            const dist = Math.hypot(dx, dy);
+
+            z.x += (dx / dist) * z.speed;
+            z.y += (dy / dist) * z.speed;
+        }
+    }
+}
+
+
+  PIXI.Assets.load('zombie.json').then(sheet => {
+    const spawner = new Spawner(app, sheet);
+
+    app.ticker.add(delta => {
+        spawner.update(delta, player);
+    });
+});
+ 
+  PIXI.Assets.load('assets/zombies/zombie.json').then(sheet => {
+    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
+    zombie.anchor.set(0.5);
+    zombie.x = app.screen.width / 2;
+    zombie.y = app.screen.height / 2;
+    zombie.animationSpeed = 0.15;
+    zombie.play();
+
+    app.stage.addChild(zombie);
+});
+ 
+   
+   ?????????????????????
 }
 
 function spawnFT(x,y,txt,col,scale){

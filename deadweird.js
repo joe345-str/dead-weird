@@ -226,6 +226,21 @@ function startGame(isDemo){
 function stopGame(){cancelAnimationFrame(animId);G.running=false;document.getElementById('gc').style.display='none';document.getElementById('hud').style.display='none';document.getElementById('lu').classList.remove('show');document.getElementById('tc').style.display='none';}
 function restartGame(){showScr(null);document.getElementById('gc').style.display='block';document.getElementById('hud').style.display='block';if(isMobile)document.getElementById('tc').style.display='block';document.getElementById('demo-b').style.display=G.demo?'block':'none';document.getElementById('minimap').style.display=G.viewMode==='tp'?'block':'none';init();}
 
+PIXI.Assets.load('assets/zombies/zombie.json')
+
+// Load the zombie atlas
+PIXI.Assets.load('assets/zombies/zombie.json').then(sheet => {
+    // Create a zombie sprite from the "walk" animation
+    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
+    zombie.anchor.set(0.5);
+    zombie.x = app.screen.width / 2;
+    zombie.y = app.screen.height / 2;
+    zombie.animationSpeed = 0.15;
+    zombie.play();
+
+    app.stage.addChild(zombie);
+});
+
 /* ── INIT ── */
 function init(){
   canvas=document.getElementById('gc');ctx=canvas.getContext('2d');

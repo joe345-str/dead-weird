@@ -117,7 +117,29 @@ app.stage.addChild(player);
 
 // Export app + player so other files can use them
 export { app, player };
+// Load the zombie atlas
+PIXI.Assets.load('assets/zombies/zombie.json').then(sheet => {
+    // Create a zombie sprite from the "walk" animation
+    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
+    zombie.anchor.set(0.5);
+    zombie.x = app.screen.width / 2;
+    zombie.y = app.screen.height / 2;
+    zombie.animationSpeed = 0.15;
+    zombie.play();
 
+    app.stage.addChild(zombie);
+});
+
+PIXI.Assets.load('assets/zombies/zombie.json').then(sheet => {
+    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
+    zombie.anchor.set(0.5);
+    zombie.x = app.screen.width / 2;
+    zombie.y = app.screen.height / 2;
+    zombie.animationSpeed = 0.15;
+    zombie.play();
+
+    app.stage.addChild(zombie);
+});
 
 /* ── STATE ── */
 let G={running:false,demo:true,viewMode:'fp'};

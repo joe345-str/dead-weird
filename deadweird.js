@@ -226,20 +226,6 @@ function startGame(isDemo){
 function stopGame(){cancelAnimationFrame(animId);G.running=false;document.getElementById('gc').style.display='none';document.getElementById('hud').style.display='none';document.getElementById('lu').classList.remove('show');document.getElementById('tc').style.display='none';}
 function restartGame(){showScr(null);document.getElementById('gc').style.display='block';document.getElementById('hud').style.display='block';if(isMobile)document.getElementById('tc').style.display='block';document.getElementById('demo-b').style.display=G.demo?'block':'none';document.getElementById('minimap').style.display=G.viewMode==='tp'?'block':'none';init();}
 
-PIXI.Assets.load('assets/zombies/zombie.json')
-
-// Load the zombie atlas
-PIXI.Assets.load('assets/zombies/zombie.json').then(sheet => {
-    // Create a zombie sprite from the "walk" animation
-    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
-    zombie.anchor.set(0.5);
-    zombie.x = app.screen.width / 2;
-    zombie.y = app.screen.height / 2;
-    zombie.animationSpeed = 0.15;
-    zombie.play();
-
-    app.stage.addChild(zombie);
-});
 
 /* ── INIT ── */
 function init(){
@@ -313,13 +299,7 @@ function fireVendor(){const vx=G.allyX,vy=G.allyY;for(let i=0;i<6;i++)setTimeout
 function spawnPU(){const TW=G.TW;const t=G.demo?['❤️','⚡'][Math.floor(Math.random()*2)]:['❤️','⚡','🛡️','💎'][Math.floor(Math.random()*4)];let x,y;do{x=(2+Math.random()*(MSIZE-4))*TW;y=(2+Math.random()*(MSIZE-4))*TW;}while(worldMap[Math.floor(y/TW)]?.[Math.floor(x/TW)]===1);G.PUs.push({x,y,type:t,life:500,pulse:0});}
 
 /* ── LOOP ── */
-function loop(){if(!G.running)return;update();if(G.viewMode==='fp')drawFP();else drawTP();animId=requestAnimationFrame(loop);}
-
-/* ── UPDATE ── */
-function update(){
-  const p=G.P,TW=G.TW;G.bgTime+=.016;G.discoAngle+=.03;
-  let dx=0,dy=0;
-  const MOVE_SPD=0.055; // world units per frame
+function loop()D=0.055; // world units per frame
   if(isMobile){dx=joyDelta.x*MOVE_SPD*TW;dy=joyDelta.y*MOVE_SPD*TW;}
   else{
     if(KEYS['w']){dx+=Math.cos(p.angle)*MOVE_SPD*TW;dy+=Math.sin(p.angle)*MOVE_SPD*TW;}
@@ -338,7 +318,13 @@ function update(){
   // Angle update
   if(G.viewMode==='tp'){
     const s=tpScale();
-    p.angle=Math.atan2(MY-CH()/2, MX-CW()/2);
+   {if(!G.running)return;update();if(G.viewMode==='fp')drawFP();else drawTP();animId=requestAnimationFrame(loop);}
+
+/* ── UPDATE ── */
+function update(){
+  const p=G.P,TW=G.TW;G.bgTime+=.016;G.discoAngle+=.03;
+  let dx=0,dy=0;
+  const MOVE_SP p.angle=Math.atan2(MY-CH()/2, MX-CW()/2);
   } else {
     // FP: turn from mouse delta OR arrow left/right
     if(KEYS['arrowleft'])mouseDX-=0.045;
@@ -495,7 +481,7 @@ function startReload(){
   document.getElementById('rl-lbl').style.display='block';
   SFX.reload();
   setTimeout(()=>{
-    if(!G.running)return;
+
     w.cur=w.ammo;G.reloading=false;G.rlProg=0;SFX.rdone();
     document.getElementById('rl-wrap').style.display='none';
     document.getElementById('rl-lbl').style.display='none';
@@ -514,7 +500,7 @@ function damageZ(z,dmg,explo){
   if(z.hp<=0){
     z.dead=true;z.deadT=30;SFX.kill();
     if(typeof addBloodDecal==='function')addBloodDecal(z.x,z.y,z.size*.8);
-    G.kills++;G.score+=10*(G.wave);
+       if(!G.running)return; G.kills++;G.score+=10*(G.wave);
     G.combo++;G.comboTimer=220;
     if(G.combo>G.bestCombo)G.bestCombo=G.combo;
     const cmb=G.combo;
@@ -588,83 +574,6 @@ function gameOver(){
     document.getElementById('tc').style.display='none';
     showScr('go');
   },700);
-????????
-export function createZombie(sheet, x, y) {
-    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
-    zombie.anchorset(0.5);
-    zombie.x = x;
-    zombie.y = y;
-    zombie.animationSpeed = 0.15;
-    zombie.play();
-    zombie.speed = 0.6;
-    return zombie;
-}
-import { createZombie } from './zombie.js';
-
-export class Spawner {
-    constructor(app, sheet) {
-        this.app = app;
-        this.sheet = sheet;
-        this.zombies = [];
-        this.spawnRate = 1500;
-        this.lastSpawn = 0;
-    }
-
-    update(delta, player) {
-        this.lastSpawn += delta;
-
-        if (this.lastSpawn > this.spawnRate) {
-            this.spawnZombie();
-            this.lastSpawn = 0;
-        }
-
-        this.updateZombies(player);
-    }
-
-    spawnZombie() {
-        const x = Math.random() * this.app.screen.width;
-        const y = Math.random() * this.app.screen.height;
-
-        const zombie = createZombie(this.sheet, x, y);
-        this.app.stage.addChild(zombie);
-        this.zombies.push(zombie);
-    }
-
-    updateZombies(player) {
-        for (const z of this.zombies) {
-            const dx = player.x - z.x;
-            const dy = player.y - z.y;
-            const dist = Math.hypot(dx, dy);
-
-            z.x += (dx / dist) * z.speed;
-            z.y += (dy / dist) * z.speed;
-        }
-    }
-}
-
-
-  PIXI.Assets.load('zombie.json').then(sheet => {
-    const spawner = new Spawner(app, sheet);
-
-    app.ticker.add(delta => {
-        spawner.update(delta, player);
-    });
-});
- 
-  PIXI.Assets.load('assets/zombies/zombie.json').then(sheet => {
-    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
-    zombie.anchor.set(0.5);
-    zombie.x = app.screen.width / 2;
-    zombie.y = app.screen.height / 2;
-    zombie.animationSpeed = 0.15;
-    zombie.play();
-
-    app.stage.addChild(zombie);
-});
- 
-   
-   ?????????????????????
-}
 
 function spawnFT(x,y,txt,col,scale){
   scale=scale||1;

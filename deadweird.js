@@ -721,7 +721,8 @@ function update() {
   if (G.discoTimer > 0) G.discoTimer--;
   if (G.jazzTimer > 0) G.jazzTimer--;
   if (G.staticTimer > 0) G.staticTimer--;
-
+;
+  G.bloodMoon = 0
   if (G.rainTimer > 0) {
     G.rainTimer--;
     if (Math.random() < 0.3) {

@@ -98,48 +98,7 @@ const SFX={
   birthday:()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.15,.18),i*100));},
 };
 
-// Create PixiJS app
-const app = new PIXI.Application({
-    width: 800,
-    height: 600,
-    backgroundColor: 0x000000
-});
-document.body.appendChild(app.view);
 
-// Simple player placeholder
-const player = new PIXI.Graphics();
-player.beginFill(0x00ff00);
-player.drawRect(-10, -10, 20, 20);
-player.endFill();
-player.x = app.screen.width / 2;
-player.y = app.screen.height / 2;
-app.stage.addChild(player);
-
-// Export app + player so other files can use them
-export { app, player };
-// Load the zombie atlas
-PIXI.Assets.load('assets/zombies/zombie.json').then(sheet => {
-    // Create a zombie sprite from the "walk" animation
-    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
-    zombie.anchor.set(0.5);
-    zombie.x = app.screen.width / 2;
-    zombie.y = app.screen.height / 2;
-    zombie.animationSpeed = 0.15;
-    zombie.play();
-
-    app.stage.addChild(zombie);
-});
-
-PIXI.Assets.load('assets/zombies/zombie.json').then(sheet => {
-    const zombie = new PIXI.AnimatedSprite(sheet.animations.walk);
-    zombie.anchor.set(0.5);
-    zombie.x = app.screen.width / 2;
-    zombie.y = app.screen.height / 2;
-    zombie.animationSpeed = 0.15;
-    zombie.play();
-
-    app.stage.addChild(zombie);
-});
 
 /* ── STATE ── */
 let G={running:false,demo:true,viewMode:'fp'};

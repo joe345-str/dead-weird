@@ -1,5 +1,4 @@
-name: deadweird Deploy Static Site to GitHub Pages:
-  
+name: deadweird Deploy Static Site to GitHub Pages
 
 on:
   push:

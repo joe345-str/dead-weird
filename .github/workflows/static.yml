@@ -1,4 +1,5 @@
-name: Deploy Static Site to GitHub Pages
+name: Deploy Static Site to GitHub Pages defaults:
+  
 
 on:
   push:

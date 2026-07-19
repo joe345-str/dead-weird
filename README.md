@@ -1,3 +1,20 @@
+# Dead Weird
+
+A horror-action HTML5 survival game built by JD.
+
+## Features
+- First-person and third-person gameplay
+- Zombie survival mechanics
+- Mobile-ready controls
+- Atmospheric horror maps
+- HTML5 + JavaScript engine
+
+## Development
+Built with:
+- HTML5
+- CSS3
+- JavaScript
+
 # 🧟 DEAD WEIRD
 **A zombie shooter where zombies call you to apologize.**
 

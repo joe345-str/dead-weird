@@ -1,0 +1,9 @@
+[build]
+  base = "."
+  command = "echo 'Static site: no build required'"
+  publish = "."
+
+[[redirects]]
+  from = "/"
+  to = "/deadweird.html"
+  status = 200

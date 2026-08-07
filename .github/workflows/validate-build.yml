@@ -1,0 +1,48 @@
+name: Validate build (pre-deploy checks)
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (if package.json)
+        if: "exists('package.json')"
+        run: |
+          npm ci
+
+      - name: Run build (if build script)
+        if: "(exists('package.json') && steps.install-deps.outcome != 'failure')"
+        run: |
+          if npm run | grep -q "build"; then
+            npm run build
+          else
+            echo "No build script detected; skipping build step"
+          fi
+
+      - name: Verify publish files
+        run: |
+          if [ -f deadweird.html ]; then
+            echo "Found deadweird.html"
+          elif [ -d build ] || [ -d dist ] || [ -d public ]; then
+            echo "Found build output directory"
+          else
+            echo "ERROR: No publish files found (deadweird.html or build/ dist/ public/).";
+            exit 1;
+          fi

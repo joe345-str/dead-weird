@@ -1,0 +1,46 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Build (optional)
+        run: |
+          if [ -f package.json ]; then
+            if npm run | grep -q "build"; then
+              npm ci
+              npm run build
+            fi
+          fi
+
+      - name: Deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ] || [ -z "$NETLIFY_SITE_ID" ]; then
+            echo "ERROR: NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID must be set in repository secrets";
+            exit 1;
+          fi
+          # Deploy the repo root (change --dir if your publish directory is different)
+          netlify deploy --dir=./ --prod --site=$NETLIFY_SITE_ID

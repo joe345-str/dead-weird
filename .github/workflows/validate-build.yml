@@ -17,32 +17,69 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check project files
+        run: |
+          echo "Checking project files..."
+
+          if [ -f deadweird.html ]; then
+            echo "✓ Found deadweird.html"
+          elif [ -f index.html ]; then
+            echo "✓ Found index.html"
+          elif [ -d build ]; then
+            echo "✓ Found build/"
+          elif [ -d dist ]; then
+            echo "✓ Found dist/"
+          elif [ -d public ]; then
+            echo "✓ Found public/"
+          else
+            echo "ERROR: No publishable files found."
+            echo "Expected deadweird.html, index.html, build/, dist/, or public/."
+            exit 1
+          fi
+
       - name: Setup Node.js
+        if: ${{ hashFiles('package.json') != '' }}
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
+          cache: npm
 
-      - name: Install dependencies (if package.json)
-        if: "exists('package.json')"
+      - name: Install dependencies
+        if: ${{ hashFiles('package.json') != '' }}
         run: |
-          npm ci
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
-      - name: Run build (if build script)
-        if: "(exists('package.json') && steps.install-deps.outcome != 'failure')"
+      - name: Run build if available
+        if: ${{ hashFiles('package.json') != '' }}
         run: |
-          if npm run | grep -q "build"; then
+          if npm run | grep -qE '^[[:space:]]+build'; then
+            echo "Build script found."
             npm run build
           else
-            echo "No build script detected; skipping build step"
+            echo "No build script detected; skipping build."
           fi
 
-      - name: Verify publish files
+      - name: Verify final publish files
         run: |
+          echo "Verifying publish files..."
+
           if [ -f deadweird.html ]; then
-            echo "Found deadweird.html"
-          elif [ -d build ] || [ -d dist ] || [ -d public ]; then
-            echo "Found build output directory"
+            echo "✓ deadweird.html is ready"
+          elif [ -f index.html ]; then
+            echo "✓ index.html is ready"
+          elif [ -d build ]; then
+            echo "✓ build/ is ready"
+          elif [ -d dist ]; then
+            echo "✓ dist/ is ready"
+          elif [ -d public ]; then
+            echo "✓ public/ is ready"
           else
-            echo "ERROR: No publish files found (deadweird.html or build/ dist/ public/).";
-            exit 1;
+            echo "ERROR: No publish files found after build."
+            exit 1
           fi
+
+          echo "Validation completed successfully."
